@@ -11,6 +11,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.Serializable;
@@ -24,6 +26,7 @@ import edu.nanodegreeprojects.popularmovies.utils.NetworkUtils;
 public class MainActivity extends AppCompatActivity implements MovieAdapterOnClickHandler {
 
     private RecyclerView mainRecyclerView;
+    private ProgressBar progressBar;
     private final int NUMBER_OF_COLUMNS = 3;
     private MovieAdapter movieAdapter;
     public static final String INTENT_EXTRA_OBJECT = "INTENT_EXTRA_OBJECT";
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mainRecyclerView.setLayoutManager(gridLayoutManager);
         movieAdapter = new MovieAdapter(this);
         mainRecyclerView.setAdapter(movieAdapter);
+        mainRecyclerView.setHasFixedSize(true);
 
         movieAdapter.setMovieData("");
         loadMovieData("popular", 1);
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
 
     public void loadComponents() {
         mainRecyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
+        progressBar = findViewById(R.id.progress_bar);
     }
 
 
@@ -66,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            //mLoadingIndicator.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -99,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
 
         @Override
         protected void onPostExecute(String movieData) {
+            progressBar.setVisibility(View.INVISIBLE);
             if (movieData != null) {
                 movieAdapter.setMovieData(movieData);
             } else {
