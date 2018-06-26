@@ -17,7 +17,7 @@ public final class NetworkUtils {
     private static final String MOVIES_DB_URL = "https://api.themoviedb.org/3/movie";
     private static final String THUMBNAILS_DB_URL = "http://image.tmdb.org/t/p";
 
-    private static final String MY_API_KEY = "";
+    private static final String MY_API_KEY = "74668b7907bb160121c3e7a9f2732341";
     private static final String API_KEY_TAG = "api_key";
 
     //language support can be added on future releases

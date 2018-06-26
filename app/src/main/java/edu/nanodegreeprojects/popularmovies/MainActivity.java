@@ -5,14 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.Serializable;
@@ -27,7 +28,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
 
     private RecyclerView mainRecyclerView;
     private ProgressBar progressBar;
-    private final int NUMBER_OF_COLUMNS = 3;
+    private TextView tvMessageError;
+    private final int NUMBER_OF_COLUMNS = 2;
     private MovieAdapter movieAdapter;
     public static final String INTENT_EXTRA_OBJECT = "INTENT_EXTRA_OBJECT";
 
@@ -42,16 +44,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mainRecyclerView.setLayoutManager(gridLayoutManager);
         movieAdapter = new MovieAdapter(this);
         mainRecyclerView.setAdapter(movieAdapter);
-        mainRecyclerView.setHasFixedSize(true);
+        mainRecyclerView.setHasFixedSize(false);
 
         movieAdapter.setMovieData("");
         loadMovieData("popular", 1);
+        Log.i("app-app", "onCreate");
 
     }
 
     public void loadComponents() {
-        mainRecyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
+        mainRecyclerView = findViewById(R.id.main_recycler_view);
         progressBar = findViewById(R.id.progress_bar);
+        tvMessageError = findViewById(R.id.tv_message_error);
+    }
+
+    public void loadMovies(String movieData) {
+        if (movieData != null) {
+            movieAdapter.setMovieData(movieData);
+        }
     }
 
 
@@ -61,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         Context context = this;
         Class movieDetailClass = MovieDetail.class;
         Intent intentToStartMovieDetailActivity = new Intent(context, movieDetailClass);
-        intentToStartMovieDetailActivity.putExtra(INTENT_EXTRA_OBJECT, (Serializable) movie);
+        intentToStartMovieDetailActivity.putExtra(INTENT_EXTRA_OBJECT, movie);
         startActivity(intentToStartMovieDetailActivity);
     }
 
@@ -72,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         protected void onPreExecute() {
             super.onPreExecute();
             progressBar.setVisibility(View.VISIBLE);
+            tvMessageError.setVisibility(View.INVISIBLE);
+            Log.i("app-app", "onPreExecute");
         }
 
         @Override
@@ -89,10 +101,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 String jsonVideosResponse = NetworkUtils
                         .getResponseFromHttpUrl(videosRequestUrl);
 
-//                String[] simpleJsonWeatherData = JsonParser
-//                        .getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
 
-                System.out.println(jsonVideosResponse);
                 return jsonVideosResponse;
 
             } catch (Exception e) {
@@ -105,20 +114,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         @Override
         protected void onPostExecute(String movieData) {
             progressBar.setVisibility(View.INVISIBLE);
-            if (movieData != null) {
-                movieAdapter.setMovieData(movieData);
-            } else {
-                //showErrorMessage();
-            }
+            tvMessageError.setVisibility(View.INVISIBLE);
+            if (movieData != null)
+                loadMovies(movieData);
+            else
+                showErrorMessage();
+
         }
+
 
     }
 
     private void showErrorMessage() {
 
-        //mRecyclerView.setVisibility(View.INVISIBLE);
-//        mErrorMessageDisplay.setVisibility(View.VISIBLE);
-        Toast.makeText(this, "Something went wrong!", Toast.LENGTH_LONG).show();
+        progressBar.setVisibility(View.INVISIBLE);
+        tvMessageError.setVisibility(View.VISIBLE);
     }
 
     private void loadMovieData(String sortType, int pageId) {
@@ -131,12 +141,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.sort_by_popular:
-                movieAdapter.setMovieData("");
+                //movieAdapter.setMovieData("");
+                mainRecyclerView.setAdapter(movieAdapter);
                 loadMovieData("popular", 1);
                 break;
             case R.id.sort_by_highest_rated:

@@ -10,5 +10,6 @@
     <!--MAIN ACTIVITY SORT OPTIONS-->
     <string name="sort_by_most_popular">Sort by most popular</string>
     <string name="sort_by_highest_rated">Sort by highest rated</string>
+    <string name="message_error">Something went wrong! Click on settings menu to try load again!</string>
 
 </resources>

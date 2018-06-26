@@ -40,7 +40,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     private List<Movie> movieList = new ArrayList<>();
     private Context context;
-    //private String[] movieData;
 
     private final MovieAdapterOnClickHandler mClickHandler;
 
@@ -70,7 +69,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         public MovieAdapterViewHolder(View view) {
             super(view);
-            //movieNameTextView = view.findViewById(R.id.movie_name_item);
             ivMovieThumbnail = view.findViewById(R.id.iv_movie_item);
             view.setOnClickListener(this);
             context = view.getContext();
@@ -97,7 +95,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
-        return new MovieAdapterViewHolder(view);
+        MovieAdapterViewHolder movieAdapterViewHolder = new MovieAdapterViewHolder(view);
+        return movieAdapterViewHolder;
     }
 
     /**
@@ -112,11 +111,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      */
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder movieAdapterViewHolder, int position) {
-        //String movie = movieData[position];
         String movieThumbnail = movieList.get(position).getThumbnailPath();
         Picasso.with(context).load(NetworkUtils.buildUrl(movieThumbnail).toString()).into(movieAdapterViewHolder.ivMovieThumbnail);
-//
-//        movieAdapterViewHolder.movieNameTextView.setText(movie);
     }
 
     /**
@@ -127,8 +123,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      */
     @Override
     public int getItemCount() {
-//        if (null == movieData) return 0;
-//        return movieData.length;
         if (movieList.isEmpty()) return 0;
         return movieList.size();
     }
@@ -143,14 +137,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     public void setMovieData(String movieData) {
         List<Movie> movieList = new ArrayList<>();
         if (!movieData.equals("")) {
-
             try {
                 movieList = JsonParser.convertHTTPReturnToMovie(movieData);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            this.movieList = movieList;
+        } else {
+            this.movieList.clear();
         }
-        this.movieList = movieList;
         notifyDataSetChanged();
     }
 }
