@@ -1,8 +1,7 @@
 package edu.nanodegreeprojects.popularmovies;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,7 +30,7 @@ public class MovieDetail extends AppCompatActivity {
         }
     }
 
-    public void loadComponents() {
+    private void loadComponents() {
         ivMovieThumbnail = findViewById(R.id.iv_movie_item_detail);
         tvMovieTitle = findViewById(R.id.tv_movie_title);
         tvMovieReleaseDate = findViewById(R.id.tv_movie_release_date);
@@ -39,7 +38,7 @@ public class MovieDetail extends AppCompatActivity {
         tvMovieOverview = findViewById(R.id.tv_movie_overview);
     }
 
-    public void fillMovieFields(String movieTitle, String movieReleaseDate, String movieVoteAverage, String movieOverview, String movieThumbnail) {
+    private void fillMovieFields(String movieTitle, String movieReleaseDate, String movieVoteAverage, String movieOverview, String movieThumbnail) {
 
         tvMovieTitle.setText(movieTitle);
         tvMovieReleaseDate.setText(movieReleaseDate);

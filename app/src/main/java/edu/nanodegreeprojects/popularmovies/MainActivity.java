@@ -5,18 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.Serializable;
 import java.net.URL;
 
 import edu.nanodegreeprojects.popularmovies.adapters.MovieAdapter;
@@ -30,8 +28,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     private ProgressBar progressBar;
     private TextView tvMessageError;
     private final int NUMBER_OF_COLUMNS = 2;
+    private final String RECYCLER_VIEW_STATE_TAG = "RECYCLER_VIEW_STATE";
     private MovieAdapter movieAdapter;
     public static final String INTENT_EXTRA_OBJECT = "INTENT_EXTRA_OBJECT";
+    private Parcelable listPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,24 +46,44 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mainRecyclerView.setAdapter(movieAdapter);
         mainRecyclerView.setHasFixedSize(false);
 
-        movieAdapter.setMovieData("");
         loadMovieData("popular", 1);
-        Log.i("app-app", "onCreate");
-
     }
 
-    public void loadComponents() {
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        if (mainRecyclerView.getLayoutManager().onSaveInstanceState() != null)
+            outState.putParcelable(RECYCLER_VIEW_STATE_TAG, mainRecyclerView.getLayoutManager().onSaveInstanceState());
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null)
+            listPosition = savedInstanceState.getParcelable(RECYCLER_VIEW_STATE_TAG);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (listPosition != null)
+            mainRecyclerView.getLayoutManager().onRestoreInstanceState(listPosition);
+    }
+
+    private void loadComponents() {
         mainRecyclerView = findViewById(R.id.main_recycler_view);
         progressBar = findViewById(R.id.progress_bar);
         tvMessageError = findViewById(R.id.tv_message_error);
     }
 
-    public void loadMovies(String movieData) {
+    private void loadMovies(String movieData) {
         if (movieData != null) {
             movieAdapter.setMovieData(movieData);
         }
     }
-
 
     @Override
     public void onClick(Movie movie) {
@@ -76,14 +96,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     }
 
     @SuppressLint("StaticFieldLeak")
-    public class FetchVideos extends AsyncTask<String, Void, String> {
+    class FetchVideos extends AsyncTask<String, Void, String> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             progressBar.setVisibility(View.VISIBLE);
             tvMessageError.setVisibility(View.INVISIBLE);
-            Log.i("app-app", "onPreExecute");
         }
 
         @Override
@@ -98,11 +117,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
             URL videosRequestUrl = NetworkUtils.buildUrl(queryType, pageID);
 
             try {
-                String jsonVideosResponse = NetworkUtils
-                        .getResponseFromHttpUrl(videosRequestUrl);
-
-
-                return jsonVideosResponse;
+                return NetworkUtils.getResponseFromHttpUrl(videosRequestUrl);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -121,8 +136,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 showErrorMessage();
 
         }
-
-
     }
 
     private void showErrorMessage() {
@@ -145,8 +158,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.sort_by_popular:
-                //movieAdapter.setMovieData("");
-                mainRecyclerView.setAdapter(movieAdapter);
+                movieAdapter.setMovieData("");
                 loadMovieData("popular", 1);
                 break;
             case R.id.sort_by_highest_rated:

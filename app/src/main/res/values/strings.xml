@@ -2,10 +2,12 @@
     <string name="app_name">Popular Movies</string>
 
     <!--MOVIE ITEM DETAILS-->
+    <string name="detail_screen_label">Movie Detail</string>
     <string name="movie_title">Movie Title</string>
     <string name="movie_release_date">Release Date</string>
     <string name="movie_vote_average">Vote Average</string>
     <string name="movie_overview">Synopsis</string>
+    <string name="movie_folder_description">Movie Folder</string>
 
     <!--MAIN ACTIVITY SORT OPTIONS-->
     <string name="sort_by_most_popular">Sort by most popular</string>

@@ -32,7 +32,7 @@ public final class JsonParser {
                     jsonObject.getString("release_date"),
                     jsonObject.getString("vote_count"),
                     jsonObject.getString("original_language")
-                    );
+            );
 
             movieList.add(movie);
         }
